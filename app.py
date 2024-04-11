@@ -22,7 +22,7 @@ async def handle_form_submission(
     resume: Annotated[UploadFile, File()],
     message: Optional[Annotated[str, Form()]] = None,
 ):
-    file_location = f"resumes/{resume.filename}"
+    file_location = f"./{resume.filename}"
 
     with open(file_location, "wb") as file_object:
         file_object.write(resume.file.read())
