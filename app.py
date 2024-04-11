@@ -11,8 +11,8 @@ domain = config["DOMAIN"]
 from_addr = f"{config['FROM_USR']}@{domain}"
 to_addr = config["TO_ADDR"]
 
-
 app = FastAPI()
+
 
 @app.post("/submit-form/")
 async def handle_form_submission(
