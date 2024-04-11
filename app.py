@@ -30,9 +30,9 @@ def send_email_via_mailgun(subject, text, filename, file_content):
     response = requests.post(url, auth=auth, data=data, files=files)
 
     if response.status_code == 200:
-        print("Email sent successfully!")
+        return "Form submitted successfully! We will get back to you soon."
     else:
-        print(f"Failed to send email. Status code: {response.status_code}, Response: {response.text}")
+        return f"Failed to send email. Status code: {response.status_code}, Response: {response.text}"
 
 
 @app.post("/submit-form/")
@@ -54,9 +54,8 @@ async def handle_form_submission(
     Message: {message}
     """
 
-    send_email_via_mailgun(subject, text, resume.filename, file_contents)
+    return send_email_via_mailgun(subject, text, resume.filename, file_contents)
 
-    return "Form submitted successfully! We will get back to you soon."
 
 if __name__ == "__main__":
     pass
