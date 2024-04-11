@@ -1,15 +1,13 @@
 from fastapi import FastAPI, Form, UploadFile, File
 from typing import Optional, Annotated
 from send_email import send_email_via_mailgun
-from dotenv import dotenv_values
 import os
 
-config = dotenv_values(".env")
 
-api_key = config["MAILGUN_API_KEY"]
-domain = config["DOMAIN"]
-from_addr = f"{config['FROM_USR']}@{domain}"
-to_addr = config["TO_ADDR"]
+api_key = os.environ.get("MAILGUN_API_KEY")
+domain = os.environ.get("DOMAIN")
+from_addr = f"{os.environ.get('FROM_USR')}@{domain}"
+to_addr = os.environ.get("TO_ADDR")
 
 app = FastAPI()
 
