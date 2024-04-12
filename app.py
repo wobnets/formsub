@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Form, UploadFile, File
-from typing import Optional, Annotated
+from typing import Annotated
 from fastapi.responses import JSONResponse
 import os
 import requests
@@ -21,7 +21,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=ORIGINS,
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["POST"],
     allow_headers=["*"],
 )
 
@@ -52,7 +52,8 @@ async def handle_form_submission(
     phone: Annotated[str, Form()],
     email: Annotated[str, Form()],
     resume: Annotated[UploadFile, File()],
-    message: Optional[Annotated[str, Form()]] = None,
+    position: Annotated[str, Form()],
+    message: Annotated[str, Form()],
 ):
     valid_types = [
         'application/pdf',
@@ -69,13 +70,15 @@ async def handle_form_submission(
 
 
     # send email
-    subject = f"New Employment Application from {name}"
+    subject = f"New Employment Application from {name} for {position} position"
     text = f"""
+    Position: {position}
     Name: {name}
     Phone: {phone}
     Email: {email}
     Message: {message}
     """
+    print(text)
 
     email_response = send_email_via_mailgun(subject, text, resume.filename, file_contents)
 
@@ -84,6 +87,7 @@ async def handle_form_submission(
     else:
         return JSONResponse(content=email_response)
 
+    #return JSONResponse(content={"message": "Form submitted successfully! We will get back to you soon."})
 
 if __name__ == "__main__":
     pass
