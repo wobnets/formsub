@@ -15,7 +15,6 @@ TO_ADDR = os.environ.get("TO_ADDR")
 app = FastAPI()
 
 ORIGINS = list(str(os.environ.get("ORIGINS")).split(","))
-print(f"ORIGINS: {ORIGINS}")
 
 app.add_middleware(
     CORSMiddleware,
