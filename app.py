@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Form, UploadFile, File
 from typing import Optional, Annotated
+from fastapi.responses import JSONResponse
 import os
 import requests
 from dotenv import load_dotenv
@@ -41,10 +42,9 @@ def send_email_via_mailgun(subject, text, filename, file_content):
     response = requests.post(url, auth=auth, data=data, files=files)
 
     if response.status_code == 200:
-        return "Form submitted successfully! We will get back to you soon."
+        return {"message": "Form submitted successfully! We will get back to you soon."}
     else:
-        return f"Failed to send email. Status code: {response.status_code}, Response: {response.text}"
-
+        return {"error": f"Failed to send email. Status code: {response.status_code}, Response: {response.text}"}
 
 @app.post("/submit-form/")
 async def handle_form_submission(
@@ -54,7 +54,19 @@ async def handle_form_submission(
     resume: Annotated[UploadFile, File()],
     message: Optional[Annotated[str, Form()]] = None,
 ):
+    valid_types = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ]
+
+    if resume.content_type not in valid_types:
+        return JSONResponse(status_code=400, content={"error": "Invalid file type. Please upload a PDF or Word document."})
+
     file_contents = await resume.read()
+    if len(file_contents) > 10485760:
+        return JSONResponse(status_code=400, content={"error": "File size too large. Please upload a file smaller than 10MB."})
+
 
     # send email
     subject = f"New Employment Application from {name}"
@@ -65,7 +77,13 @@ async def handle_form_submission(
     Message: {message}
     """
 
-    return send_email_via_mailgun(subject, text, resume.filename, file_contents)
+    email_response = send_email_via_mailgun(subject, text, resume.filename, file_contents)
+
+    if "error" in email_response:
+        return JSONResponse(status_code=500, content=email_response)
+    else:
+        print(email_response)
+        return JSONResponse(content=email_response)
 
 
 if __name__ == "__main__":
