@@ -25,7 +25,6 @@ app.add_middleware(
 )
 
 def send_email_via_mailgun(subject, text, filename, file_content):
-    print(f"ORIGINS: {ORIGINS}")
     url = f"https://api.mailgun.net/v3/{DOMAIN}/messages"
 
     auth=("api", f"{API_KEY}")
