@@ -3,6 +3,7 @@ from typing import Optional, Annotated
 import os
 import requests
 from dotenv import load_dotenv
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
 
@@ -12,6 +13,16 @@ FROM_ADDR = f"{os.environ.get('FROM_USR')}@{DOMAIN}"
 TO_ADDR = os.environ.get("TO_ADDR")
 
 app = FastAPI()
+
+ORIGINS = list(str(os.environ.get("ORIGINS")).split(","))
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=ORIGINS,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def send_email_via_mailgun(subject, text, filename, file_content):
     url = f"https://api.mailgun.net/v3/{DOMAIN}/messages"
