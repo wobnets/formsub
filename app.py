@@ -82,7 +82,6 @@ async def handle_form_submission(
     if "error" in email_response:
         return JSONResponse(status_code=500, content=email_response)
     else:
-        print(email_response)
         return JSONResponse(content=email_response)
 
 
