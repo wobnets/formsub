@@ -70,7 +70,7 @@ async def handle_form_submission(
 
 
     # send email
-    subject = f"New Employment Application from {name} for {position} position"
+    subject = f"Application from {name} for {position} position"
     text = f"""
     Position: {position}
     Name: {name}
